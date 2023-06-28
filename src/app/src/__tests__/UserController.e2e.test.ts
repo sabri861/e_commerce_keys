@@ -77,15 +77,18 @@ describe('User Controller', () => {
     });
 
     it('should update a user', async () => {
+        const newEmail = `${v4()}jhon@doe.com`;
         const response = await request(app)
             .put(`/users/${user.userProps.id}`)
-            .set("authorization", token)
+            .set("authorization", `Bearer ${token}`)
             .send({
-                email: "updatedemail@example.com"
+                email: newEmail,
             });
+
         expect(response.status).toBe(200);
-        expect(response.body.email).toEqual("updatedemail@example.com");
+        expect(response.body.email).toEqual(newEmail);
     });
+
 
 
 });
