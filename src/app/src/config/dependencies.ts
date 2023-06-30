@@ -1,4 +1,3 @@
-
 import 'dotenv/config';
 import {GetUserById} from "../../../core/usecase/user/GetUserById";
 import {DeleteUser} from "../../../core/usecase/user/DeleteUser";
@@ -21,6 +20,7 @@ const jwt = new JwtIdentityGateway(process.env.SECRET_KEY);
 export const dependencies = {
     jwt: jwt,
     sendGridGateway: sendGridGateway,
+    passwordGateway: passwordGateway,
     SignUp: new SignUp(userRepository, passwordGateway, sendGridGateway, jwt),
     signIn: new SignIn(userRepository, passwordGateway),
     updateUser: new UpdateUser(userRepository, passwordGateway),

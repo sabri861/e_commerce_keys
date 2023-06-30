@@ -6,16 +6,19 @@ import {
     Post,
     Put,
     Res,
-    Authorized,
-    Req
+    Req, UseBefore,
+
 } from "routing-controllers";
 import { dependencies } from "../../config/dependencies";
 import { UserApiResponseDto } from "../../domain/dtos/UserApiResponseDto";
 import {SignUpProps} from "../../../../core/usecase/user/SignUp";
 import {SignInProps} from "../../../../core/usecase/user/SignIn";
-import {UpdateUserProps} from "../../../../core/usecase/user/UpdateUser";
+
 import {Response} from "express";
 import {AuthenticatedRequest} from "../../config/AuthenticatedRequest";
+import {UpdateUserProps} from "../../../../core/usecase/user/UpdateUser";
+import {Role} from "../../../../core/domain/ValueObject/Role";
+import {AuthenticationMiddleware} from "../../middleware/AuthenticationMiddleware";
 
 @JsonController("/users")
 export class UserController {
@@ -44,6 +47,10 @@ export class UserController {
     @Post("/signin")
     async signIn(@Res() res: Response, @Body() signInProps: SignInProps) {
         const user = await dependencies.signIn.execute(signInProps);
+        const isMatch =  await dependencies.passwordGateway.compare(signInProps.password, user.userProps.password);
+        if (!isMatch) {
+            return res.status(400).send({message: "Invalid email or password"});
+        }
         const accessKey = await dependencies.jwt.generate(user);
         const userResponse = this.userApiResponseDto.fromDomain(user);
         return res.status(200).send({
@@ -52,26 +59,14 @@ export class UserController {
         });
     }
 
-    @Authorized()
-    @Put('/:id')
-    async updateUser(
-        @Param('id') id: string,
-        @Body() updateUserProps: UpdateUserProps,
-        @Req() request: AuthenticatedRequest,
-        @Res() response: Response
-    ) {
-        try {
-            const canExecute = await dependencies.updateUser.canExecute(request.identity, {id: id, ...updateUserProps});
-            if (!canExecute) {
-                return response.status(403).json({ message: 'Forbidden' });
-            }
-
-            const user = await dependencies.updateUser.execute({id: id, ...updateUserProps});
-            return response.status(200).json(user);
-        } catch (err) {
-            console.error(err);
-            return response.status(500).json({ message: err.message });
+    @UseBefore(AuthenticationMiddleware)
+    @Put("/:id")
+    async updateUser(@Req() req: AuthenticatedRequest, @Res() res: Response, @Param("id") id: string, @Body() updateUserProps: UpdateUserProps) {
+        if (req.identity.id !== id && req.identity.role !== Role.ADMIN) {
+            return res.status(401).send({message: "Unauthorized"});
         }
-    }
 
+        const updatedUser = await dependencies.updateUser.execute({ id, ...updateUserProps });
+        return res.status(200).send(this.userApiResponseDto.fromDomain(updatedUser));
+    }
 }

@@ -30,15 +30,8 @@ export class UpdateUser implements Usecase<UpdateUserProps,User> {
         return existingUser;
     }
 
-    async canExecute(currentUser: Identity, props: UpdateUserProps): Promise<boolean> {
-
-        if (currentUser.role === Role.ADMIN) {
-            return true;
-        }
-        if (currentUser.role === Role.USER && currentUser.id === props.id) {
-            return true;
-        }
-        return false;
+    async canExecute(identity: Identity, payload?: UpdateUserProps): Promise<boolean> {
+        return identity.id === payload?.id;
     }
 
 }

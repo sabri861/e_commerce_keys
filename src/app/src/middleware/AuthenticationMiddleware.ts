@@ -10,12 +10,14 @@ export class AuthenticationMiddleware implements ExpressMiddlewareInterface {
 
         if (authHeader) {
             const token = authHeader.split(' ')[1];
-            console.log(token)
+            console.log('Authorization Header:', authHeader);
+            console.log('Extracted Token:', token);
             try {
                 const identity = await dependencies.jwt.decoded(token);
+                console.log('Decoded Identity:', identity);
                 (req as AuthenticatedRequest).identity = identity;
             } catch (error) {
-                console.log(error)
+                console.error('Token Decoding Error:', error);
                 res.status(401).json({ message: "Invalid or expired token" });
                 return;
             }

@@ -60,20 +60,15 @@ describe("Unit-UpdateUser", () => {
         })).rejects.toThrow("User not found");
     });
 
-    it("Admin can update any user", async () => {
-        const admin = new User({id: "admin-id", email: "admin@doe.fr", password: "qwerty", role: Role.ADMIN});
-        const canUpdate = await updateUser.canExecute(admin.userProps, {id: user.userProps.id});
-        expect(canUpdate).toBe(true);
+    it("Should check if user can execute action", async () => {
+        const canExecute = await updateUser.canExecute({id: user.userProps.id, role: Role.USER}, {id: user.userProps.id});
+        expect(canExecute).toEqual(true);
     });
 
-    it("User can update self", async () => {
-        const canUpdate = await updateUser.canExecute(user.userProps, {id: user.userProps.id});
-        expect(canUpdate).toBe(true);
+    it("Should check if user can't execute action", async () => {
+        const canExecute = await updateUser.canExecute({id: 'other-id', role: Role.USER}, {id: user.userProps.id});
+        expect(canExecute).toEqual(false);
     });
 
-    it("User cannot update other user", async () => {
-        const otherUser = new User({id: "other-id", email: "other@doe.fr", password: "qwerty", role: Role.USER});
-        const canUpdate = await updateUser.canExecute(otherUser.userProps, {id: user.userProps.id});
-        expect(canUpdate).toBe(false);
-    });
+
 });

@@ -8,7 +8,7 @@ interface UserAPIResponse {
     firstName?: string;
     lastName?: string;
     email: string;
-    role: string;
+    role: Role;
 }
 
 export class UserApiResponseDto implements Mapper<User, UserAPIResponse> {
@@ -18,7 +18,7 @@ export class UserApiResponseDto implements Mapper<User, UserAPIResponse> {
             firstName: user.userProps.firstName,
             lastName: user.userProps.lastName,
             email: user.userProps.email,
-            role: Role[user.userProps.role],
+            role: user.userProps.role,
         };
     }
 }
