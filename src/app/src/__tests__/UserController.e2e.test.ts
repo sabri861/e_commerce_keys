@@ -106,4 +106,37 @@ describe('User Controller', () => {
 
         expect(isMatch).toBe(true);
     });
+
+    it('should allow a user to delete their own account', async () => {
+        const response = await request(app)
+            .delete(`/users/${user.userProps.id}`)
+            .set("Authorization", `Bearer ${token}`);
+
+        expect(response.status).toBe(204);
+
+        let deletedUser;
+        try {
+            deletedUser = await dependencies.getUserById.execute({userId: user.userProps.id});
+        } catch (err) {
+            deletedUser = null;
+        }
+
+        expect(deletedUser).toBeNull();
+    });
+
+
+    it('should not allow a non-admin user to delete another user', async () => {
+        const anotherUser = await dependencies.SignUp.execute({
+            email: `${v4()}another@doe.com`,
+            password: '@Zerty',
+            role: Role.USER,
+        });
+
+        const response = await request(app)
+            .delete(`/users/${anotherUser.userProps.id}`)
+            .set("Authorization", `Bearer ${token}`);
+
+        expect(response.status).toBe(401);
+    });
+
 });

@@ -60,7 +60,7 @@ describe('Integration: MongoDbUserRepo', () => {
 
     it('Should delete user via id', async () => {
         await userRepo.delete(testUser.userProps.id);
-        const deletedUser = await userRepo.getById(testUser.userProps.id);
-        expect(deletedUser).toBeNull();
+        await expect(userRepo.getById(testUser.userProps.id)).rejects.toThrow();
     });
+
 });

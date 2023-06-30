@@ -1,7 +1,5 @@
 import {Usecase} from "../Usecase";
 import {UserRepo} from "../../domain/repositories/UserRepo";
-import {User} from "../../domain/entities/User";
-import {Role} from "../../domain/ValueObject/Role";
 import {Identity} from "../../domain/Identity";
 
 export class DeleteUser implements Usecase<string, void> {
@@ -11,8 +9,9 @@ export class DeleteUser implements Usecase<string, void> {
         await this.userRepo.delete(id);
     }
 
-    async canExecute(identity: Identity, id: string): Promise<boolean> {
-        if(identity.role === Role.ADMIN || (identity.role >= Role.USER && identity.id === id)) {
+    async canExecute(identity: Identity): Promise<boolean> {
+
+        if (identity.role >= 3) {
             return true;
         }
         return false;

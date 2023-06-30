@@ -59,14 +59,37 @@ describe("Unit-UpdateUser", () => {
             email: "jane@doe.fr"
         })).rejects.toThrow("User not found");
     });
+    it("Should throw an error if user not found", async () => {
+        await expect(updateUser.execute({
+            id: "non-existing-id",
+            email: "jane@doe.fr"
+        })).rejects.toThrow("User not found");
+    });
 
-    it("Should check if user can execute action", async () => {
-        const canExecute = await updateUser.canExecute({id: user.userProps.id, role: Role.USER}, {id: user.userProps.id});
+    it("Should allow an admin to execute", async () => {
+        const adminUser = await signUp.execute({
+            firstName: "Jane",
+            lastName: "Admin",
+            email: "janeAdmin@doe.fr",
+            password: "azerty",
+            role: Role.ADMIN
+        });
+
+        const canExecute = await updateUser.canExecute({
+            id: adminUser.userProps.id,
+            role: Role.ADMIN
+        });
+
         expect(canExecute).toEqual(true);
     });
 
-    it("Should check if user can't execute action", async () => {
-        const canExecute = await updateUser.canExecute({id: 'other-id', role: Role.USER}, {id: user.userProps.id});
+
+    it("Should not allow a user to execute", async () => {
+        const canExecute = await updateUser.canExecute({
+            id: user.userProps.id,
+            role: Role.USER
+        });
+
         expect(canExecute).toEqual(false);
     });
 

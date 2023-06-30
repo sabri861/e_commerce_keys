@@ -6,6 +6,7 @@ import {User} from "../../domain/entities/User";
 import {InMemorySendEmailGateway} from "../adapters/gateways/InMemorySendEmailGateway";
 import {InMemoryJwtGateway} from "../adapters/gateways/InMemoryJwtGateway.";
 import {InMemoryPasswordGateway} from "../adapters/gateways/InMemoryPasswordGateway";
+import {Identity} from "../../domain/Identity";
 
 
 describe("Unit-DeleteUser", () => {
@@ -31,43 +32,33 @@ describe("Unit-DeleteUser", () => {
             role: Role.USER
         });
     });
-    it("Should allow a user to delete their own account", async () => {
-        const canDelete = await deleteUser.canExecute(user.userProps, user.userProps.id);
-        expect(canDelete).toEqual(true);
+
+    it('should delete the user', async () => {
         await deleteUser.execute(user.userProps.id);
         const deletedUser = await userRepo.getById(user.userProps.id);
         expect(deletedUser).toBeUndefined();
     });
 
-    it("Should not allow a user to delete someone else's account", async () => {
-        const otherUser = await signUp.execute({
-            email: "jane@doe.fr",
-            password: "qwerty",
-            role: Role.USER
-        });
-        const canDelete = await deleteUser.canExecute(user.userProps, otherUser.userProps.id);
-        expect(canDelete).toEqual(false);
+    it('should not throw an error when user does not exist', async () => {
+        await expect(deleteUser.execute('nonexistentid')).resolves.not.toThrow();
     });
 
-    it("Should allow an admin to delete any account", async () => {
-        const admin = await signUp.execute({
-            firstName: "Admin",
-            lastName: "Admin",
-            email: "admin@doe.fr",
-            password: "qwerty",
-            role: Role.ADMIN
-        });
-        const otherUser = await signUp.execute({
-            firstName: "Jane",
-            lastName: "Doe",
-            email: "jane2@doe.fr",
-            password: "qwerty",
+    it('should return false when role is less than ADMIN', async () => {
+        const identity: Identity = {
+            id: user.userProps.id,
             role: Role.USER
-        });
-        const canDelete = await deleteUser.canExecute(admin.userProps, otherUser.userProps.id);
-        expect(canDelete).toEqual(true);
-        await deleteUser.execute(otherUser.userProps.id);
-        const deletedUser = await userRepo.getById(otherUser.userProps.id);
-        expect(deletedUser).toBeUndefined();
+        };
+        const canExecute = await deleteUser.canExecute(identity);
+        expect(canExecute).toBe(false);
     });
+
+    it('should return true when role is ADMIN', async () => {
+        const identity: Identity = {
+            id: user.userProps.id,
+            role: Role.ADMIN
+        };
+        const canExecute = await deleteUser.canExecute(identity);
+        expect(canExecute).toBe(true);
+    });
+
 });

@@ -6,7 +6,7 @@ import {
     Post,
     Put,
     Res,
-    Req, UseBefore,
+    Req, UseBefore, Delete,
 
 } from "routing-controllers";
 import { dependencies } from "../../config/dependencies";
@@ -47,10 +47,6 @@ export class UserController {
     @Post("/signin")
     async signIn(@Res() res: Response, @Body() signInProps: SignInProps) {
         const user = await dependencies.signIn.execute(signInProps);
-        const isMatch =  await dependencies.passwordGateway.compare(signInProps.password, user.userProps.password);
-        if (!isMatch) {
-            return res.status(400).send({message: "Invalid email or password"});
-        }
         const accessKey = await dependencies.jwt.generate(user);
         const userResponse = this.userApiResponseDto.fromDomain(user);
         return res.status(200).send({
@@ -58,6 +54,7 @@ export class UserController {
             accessKey
         });
     }
+
 
     @UseBefore(AuthenticationMiddleware)
     @Put("/:id")
@@ -69,4 +66,15 @@ export class UserController {
         const updatedUser = await dependencies.updateUser.execute({ id, ...updateUserProps });
         return res.status(200).send(this.userApiResponseDto.fromDomain(updatedUser));
     }
+
+    @UseBefore(AuthenticationMiddleware)
+    @Delete("/:id")
+    async deleteUser(@Req() req: AuthenticatedRequest, @Res() res: Response, @Param("id") id: string) {
+        if (req.identity.id !== id && req.identity.role !== Role.ADMIN) {
+            return res.status(401).send({message: "Unauthorized"});
+        }
+        await dependencies.deleteUser.execute(id);
+        return res.status(204).send();
+    }
+
 }
