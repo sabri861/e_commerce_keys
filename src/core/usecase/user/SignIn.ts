@@ -17,6 +17,8 @@ export class SignIn implements Usecase<SignInProps, User>{
 
     async execute(props: SignInProps): Promise<User>{
         const userAlReadyExist = await this.userRepo.getByEmail(props.email)
+        console.log("User from DB:", userAlReadyExist);
+        console.log(JSON.stringify(userAlReadyExist))
         if(!userAlReadyExist){
             throw new Error("User does not exist");
         }

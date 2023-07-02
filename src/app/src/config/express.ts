@@ -20,8 +20,6 @@ export function configureExpress(app: Application) {
                 try {
                     const identity = await dependencies.jwt.decoded(token);
                     console.log('Decoded Identity:', identity);
-
-                    // Convertir les roles de string à enum Role
                     const roleEnums = roles.map(role => Role[role as keyof typeof Role]);
 
                     // L'admin a tous les droits
@@ -37,15 +35,15 @@ export function configureExpress(app: Application) {
                     }
 
                     console.log('Authorization Denied');
-                    return false; // Sinon, l'autorisation est refusée
+                    return false;
                 } catch (error) {
                     console.error('Token Decoding Error:', error);
-                    return false; // Si une erreur se produit lors du décodage du token, l'autorisation est refusée
+                    return
                 }
             }
 
             console.log('No Authorization Header Provided');
-            return false; // Si aucun token n'est fourni, l'autorisation est refusée par défaut
+            return false;
         }
     });
 

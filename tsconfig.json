@@ -6,7 +6,8 @@
         "baseUrl": "./src",
         "esModuleInterop": true,
         "emitDecoratorMetadata": true,
-        "experimentalDecorators": true
+        "experimentalDecorators": true,
+        "lib": ["es6", "dom"]
     },
     "exclude": ["node_modules", "jest.config.ts"]
 }

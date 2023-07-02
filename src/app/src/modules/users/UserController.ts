@@ -10,7 +10,7 @@ import {
 
 } from "routing-controllers";
 import { dependencies } from "../../config/dependencies";
-import { UserApiResponseDto } from "../../domain/dtos/UserApiResponseDto";
+import { UserApiResponseDto } from "../../dtos/UserApiResponseDto";
 import {SignUpProps} from "../../../../core/usecase/user/SignUp";
 import {SignInProps} from "../../../../core/usecase/user/SignIn";
 
@@ -27,8 +27,14 @@ export class UserController {
         this.userApiResponseDto = new UserApiResponseDto();
     }
 
+
     @Get("/:id")
-    async getById(@Param("id") id: string) {
+    async getById(@Req() req: AuthenticatedRequest, @Res() res: Response, @Param("id") id: string) {
+        const canExecute = await dependencies.getUserById.canExecute(req.identity);
+        if (!canExecute) {
+            return res.status(401).send({message: "Unauthorized"});
+        }
+
         const user = await dependencies.getUserById.execute({userId: id});
         return this.userApiResponseDto.fromDomain(user);
     }

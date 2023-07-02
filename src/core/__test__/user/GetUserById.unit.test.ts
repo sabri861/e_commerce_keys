@@ -4,6 +4,7 @@ import {GetUserById} from "../../usecase/user/GetUserById";
 import {User} from "../../domain/entities/User";
 import {InMemoryPasswordGateway} from "../adapters/gateways/InMemoryPasswordGateway";
 import {Role} from "../../domain/ValueObject/Role";
+import {Identity} from "../../domain/Identity";
 
 describe("Unit-GetUserById", () => {
     let userRepo: InMemoryUserRepo;
@@ -37,5 +38,34 @@ describe("Unit-GetUserById", () => {
         });
 
         expect(userCheck.userProps.id).toEqual(userId);
+    });
+
+    it("Should allow execute for user with ADMIN role", async () => {
+        const identity: Identity = {
+            id: "test-id",
+            role: Role.ADMIN,
+        };
+
+        const canExecute = await getUserById.canExecute(identity);
+
+        expect(canExecute).toBe(true);
+    });
+
+    it("Should not allow execute for user with non-ADMIN roles", async () => {
+        const identityUser: Identity = {
+            id: "test-id",
+            role: Role.USER,
+        };
+
+        const identitySeller: Identity = {
+            id: "test-id",
+            role: Role.SELLER,
+        };
+
+        const canExecuteUser = await getUserById.canExecute(identityUser);
+        const canExecuteSeller = await getUserById.canExecute(identitySeller);
+
+        expect(canExecuteUser).toBe(false);
+        expect(canExecuteSeller).toBe(false);
     });
 });

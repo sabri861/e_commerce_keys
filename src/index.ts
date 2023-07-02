@@ -4,7 +4,7 @@ import express from "express";
 import { configureExpress } from './app/src/config/express';
 import mongoose from 'mongoose';
 
-const PORT = 3000;
+const PORT = 5000;
 
 export const app = express()
 

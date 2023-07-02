@@ -1,45 +1,33 @@
-import { model, Schema } from "mongoose";
-import {Role} from "../../../../core/domain/ValueObject/Role";
+import * as mongoose from "mongoose";
 
-export type  userModel = {
-    id: string;
-    firstName?: string;
-    lastName?: string;
-    email: string;
-    password: string;
-    role: Role;
-}
-
-const UserSchema = new Schema({
+const userShema = new mongoose.Schema({
+    firstName: {
+        type: String,
+        required: false,
+    },
+    lastName: {
+        type: String,
+        required: false,
+    },
     id: {
         type: String,
         required: true,
         unique: true,
-        index: true,
-    },
-    firstName: {
-        type: String,
-        required: false
-    },
-    lastName: {
-        type: String,
-        required: false
     },
     email: {
         type: String,
         required: true,
         unique: true,
-        index: true
     },
     password: {
         type: String,
-        required: true
+        required: true,
     },
     role: {
         type: Number,
-        enum: [Role.USER, Role.SELLER, Role.ADMIN],
-        required: true
+        enum: [1, 2, 3],
+        required: true,
     },
-}, { timestamps: true });
+});
 
-export const UserModel = model('User', UserSchema);
+export const UserModel = mongoose.model("user", userShema);

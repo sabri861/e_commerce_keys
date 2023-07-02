@@ -9,9 +9,11 @@ import {configureExpress} from "../config/express";
 import express from "express";
 
 let user: User;
+let adminUser: User;
 let app: express.Application;
 let connection: mongoose.Connection;
 let token: string;
+let adminToken: string;
 
 describe('User Controller', () => {
     beforeAll(async () => {
@@ -25,7 +27,14 @@ describe('User Controller', () => {
             role: Role.USER,
         });
 
+        adminUser = await dependencies.SignUp.execute({
+            email: `${v4()}admin@doe.com`,
+            password: '@Zerty',
+            role: Role.ADMIN,
+        });
+
         token = await dependencies.jwt.generate(user)
+        adminToken = await dependencies.jwt.generate(adminUser);
     });
 
     afterAll(async () => {
@@ -63,7 +72,7 @@ describe('User Controller', () => {
     it('should get a user by id', async () => {
         const response = await request(app)
             .get(`/users/${user.userProps.id}`)
-            .set("Authorization", `Bearer ${token}`);
+            .set("Authorization", `Bearer ${adminToken}`);
 
         expect(response.status).toBe(200);
         expect(response.body.id).toEqual(user.userProps.id);

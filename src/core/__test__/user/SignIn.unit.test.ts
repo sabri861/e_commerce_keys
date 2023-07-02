@@ -64,4 +64,21 @@ describe("Unit-SignIn", () => {
         await expect(signIn.execute(signInProps)).rejects.toThrow("Invalid password");
     });
 
+    it("Should check if a user is saved correctly", async () => {
+        const user = await User.create({
+            firstName: "jhon",
+            lastName: "doe",
+            email : "john@doe.fr",
+            password : "azerty",
+            role: Role.USER
+        });
+        await userRepo.save(user);
+
+        const savedUser = await userRepo.getByEmail("john@doe.fr");
+
+        expect(savedUser).toBeDefined();
+        expect(savedUser.userProps.email).toEqual("john@doe.fr");
+    });
+
+
 })

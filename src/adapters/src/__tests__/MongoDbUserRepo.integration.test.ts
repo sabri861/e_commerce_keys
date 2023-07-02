@@ -21,8 +21,10 @@ describe('Integration: MongoDbUserRepo', () => {
             password: "testPassword",
             role: Role.USER
         });
+    });
 
-        await userRepo.save(testUser);
+    afterEach(async () => {
+        await mongoose.connection.dropDatabase();
     });
 
     afterAll(async () => {
@@ -30,7 +32,11 @@ describe('Integration: MongoDbUserRepo', () => {
     });
 
     it('Should save a user in MongoDB repository', async () => {
-        const savedUser = await userRepo.getById(testUser.userProps.id);
+        const initialCount = await userRepo.getCount();
+        const savedUser = await userRepo.save(testUser);
+        const finalCount = await userRepo.getCount();
+
+        expect(initialCount).toBe(finalCount - 1);
         expect(savedUser.userProps.firstName).toEqual(testUser.userProps.firstName);
         expect(savedUser.userProps.lastName).toEqual(testUser.userProps.lastName);
         expect(savedUser.userProps.email).toEqual(testUser.userProps.email);
@@ -39,11 +45,14 @@ describe('Integration: MongoDbUserRepo', () => {
     });
 
     it('Should return user via ID', async () => {
+        await userRepo.save(testUser);
         const retrievedUser = await userRepo.getById(testUser.userProps.id);
         expect(retrievedUser.userProps.email).toEqual(testUser.userProps.email);
     });
 
     it('Should return user via Email', async () => {
+        await userRepo.save(testUser);
+        await new Promise(resolve => setTimeout(resolve, 1000));
         const retrievedUser = await userRepo.getByEmail(testUser.userProps.email);
         expect(retrievedUser.userProps.email).toEqual(testUser.userProps.email);
     });
@@ -52,15 +61,20 @@ describe('Integration: MongoDbUserRepo', () => {
         const updatedEmail = `${v4()}@example.com`;
         testUser.update({ email: updatedEmail });
 
-        await userRepo.update(testUser);
-        const updatedUser = await userRepo.getById(testUser.userProps.id);
+        await userRepo.save(testUser);
+        const updatedUser = await userRepo.update(testUser);
 
         expect(updatedUser.userProps.email).toEqual(updatedEmail);
     });
 
-    it('Should delete user via id', async () => {
+    it("should delete user via id", async () => {
+        await userRepo.save(testUser);
+        const initialCount = await userRepo.getCount();
         await userRepo.delete(testUser.userProps.id);
-        await expect(userRepo.getById(testUser.userProps.id)).rejects.toThrow();
-    });
+        const finalCount = await userRepo.getCount();
 
+        expect(initialCount).toBe(finalCount + 1);
+        const userById = await userRepo.getById(testUser.userProps.id);
+        expect(userById).toBeUndefined();
+    });
 });

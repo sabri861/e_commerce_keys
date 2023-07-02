@@ -14,9 +14,11 @@ export class InMemoryUserRepo implements UserRepo{
         return this.users.find(user => user.userProps.email === email);
     }
 
-    async save(user: User): Promise<void>{
+    async save(user: User): Promise<User>{
         this.users.push(user);
+        return user;
     }
+
 
     async update(user: User): Promise<User>{
         const index = this.users.findIndex((u) => u.userProps.id === user.userProps.id);

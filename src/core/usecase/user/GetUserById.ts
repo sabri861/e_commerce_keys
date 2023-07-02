@@ -1,6 +1,7 @@
 import {Usecase} from "../Usecase";
 import {User} from "../../domain/entities/User";
 import {UserRepo} from "../../domain/repositories/UserRepo";
+import {Identity} from "../../domain/Identity";
 
 
 export interface  GetUserByIdCommand {
@@ -18,5 +19,12 @@ export class GetUserById implements Usecase<GetUserByIdCommand, User>{
             throw new Error("User not found");
         }
         return user;
+    }
+
+    async canExecute(identity: Identity): Promise<boolean> {
+        if (identity.role === 3) {
+            return true;
+        }
+        return false;
     }
 }
