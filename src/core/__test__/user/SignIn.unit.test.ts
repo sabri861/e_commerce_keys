@@ -1,3 +1,4 @@
+import 'reflect-metadata';
 import {InMemoryUserRepo} from "../adapters/repositories/InMemoryUserRepo";
 import {SignIn} from "../../usecase/user/SignIn";
 import {InMemoryPasswordGateway} from "../adapters/gateways/InMemoryPasswordGateway";

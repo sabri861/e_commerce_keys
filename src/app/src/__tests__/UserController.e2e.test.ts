@@ -24,12 +24,14 @@ describe('User Controller', () => {
         user = await dependencies.SignUp.execute({
             email: `${v4()}jhon@doe.com`,
             password: '@Zerty',
+            pseudo: `jhon${v4()}`,
             role: Role.USER,
         });
 
         adminUser = await dependencies.SignUp.execute({
             email: `${v4()}admin@doe.com`,
             password: '@Zerty',
+            pseudo: `jhon${v4()}`,
             role: Role.ADMIN,
         });
 
@@ -49,6 +51,7 @@ describe('User Controller', () => {
             .send({
                 email,
                 password: '@Zerty' ,
+                pseudo: `jhon${v4()}`,
                 role: Role.USER,
             });
 
@@ -82,6 +85,7 @@ describe('User Controller', () => {
         const anotherUser = await dependencies.SignUp.execute({
             email: `${v4()}another@doe.com`,
             password: '@Zerty',
+            pseudo: `jhon${v4()}`,
             role: Role.USER,
         });
 
@@ -95,9 +99,10 @@ describe('User Controller', () => {
         expect(response.status).toBe(401);
     });
 
-    it('should allow a user to update their own email and password', async () => {
+    it('should allow a user to update their own email and password and pseudo', async () => {
         const newEmail = "newemail@example.com";
         const newPassword = "newpassword";
+        const newPseudo = "jhon75";
 
         const response = await request(app)
             .put(`/users/${user.userProps.id}`)
@@ -105,6 +110,7 @@ describe('User Controller', () => {
             .send({
                 email: newEmail,
                 password: newPassword,
+                pseudo: newPseudo,
             });
 
         expect(response.status).toBe(200);

@@ -1,3 +1,4 @@
+import 'reflect-metadata';
 import {InMemoryUserRepo} from "../adapters/repositories/InMemoryUserRepo";
 import {SignUp} from "../../usecase/user/SignUp";
 import {GetUserById} from "../../usecase/user/GetUserById";

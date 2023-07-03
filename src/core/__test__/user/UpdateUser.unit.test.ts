@@ -1,3 +1,4 @@
+import 'reflect-metadata';
 import {InMemoryUserRepo} from "../adapters/repositories/InMemoryUserRepo";
 import {UpdateUser} from "../../usecase/user/UpdateUser";
 import {InMemoryPasswordGateway} from "../adapters/gateways/InMemoryPasswordGateway";
@@ -28,6 +29,7 @@ describe("Unit-UpdateUser", () => {
         user = await signUp.execute({
             firstName: "John",
             lastName: "Doe",
+            pseudo: "jhon86",
             email: "john@doe.fr",
             password: "azerty",
             role: Role.USER
@@ -41,6 +43,15 @@ describe("Unit-UpdateUser", () => {
         });
 
         expect(updatedUser.userProps.email).toEqual("jane@doe.fr");
+    });
+
+    it("Should update a user's pseudo", async () => {
+        const updatedUser = await updateUser.execute({
+            id: user.userProps.id,
+            pseudo: "jhon86",
+        });
+
+        expect(updatedUser.userProps.pseudo).toEqual("jhon86");
     });
 
     it("Should update a user's password", async () => {

@@ -1,3 +1,4 @@
+import 'reflect-metadata';
 import {InMemoryUserRepo} from "../adapters/repositories/InMemoryUserRepo";
 import {SignUp} from "../../usecase/user/SignUp";
 import {InMemoryPasswordGateway} from "../adapters/gateways/InMemoryPasswordGateway";
@@ -33,6 +34,7 @@ describe("Unit-SignUp", () => {
         const user = await signUp.execute({
             firstName: "jhon",
             lastName: "doe",
+            pseudo: "jhon86",
             email : "john@doe.fr",
             password : "azerty",
             role: Role.USER,
@@ -56,6 +58,7 @@ describe("Unit-SignUp", () => {
         const user = {
             firstName: "jhon",
             lastName: "doe",
+            pseudo: "jhon86",
             email: "john2@doe.fr",
             password: "azerty",
             role: Role.USER

@@ -6,6 +6,7 @@ interface UserProps {
     id: string;
     firstName?: string;
     lastName?: string;
+    pseudo?: string;
     email: string;
     password: string;
     role : Role;
@@ -21,6 +22,7 @@ export class User {
     static create(props:{
         firstName?: string;
         lastName?: string;
+        pseudo?: string;
         email: string,
         password: string
         role: Role,
@@ -32,12 +34,15 @@ export class User {
         })
     }
 
-    update(props: {email?: string, password?: string}) {
+    update(props: {email?: string, password?: string, pseudo?: string;}) {
         if (props.email) {
             this.userProps.email = props.email;
         }
         if (props.password) {
             this.userProps.password = props.password;
+        }
+        if(props.pseudo){
+            this.userProps.pseudo = props.pseudo;
         }
     }
 }

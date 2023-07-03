@@ -1,3 +1,4 @@
+import 'reflect-metadata';
 import {v4} from 'uuid';
 import {MongoDbUserRepo} from "../repositories/mongoDb/MongoDbUserRepo";
 import {User} from "../../../core/domain/entities/User";

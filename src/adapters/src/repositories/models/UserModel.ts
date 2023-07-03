@@ -9,6 +9,12 @@ const userShema = new mongoose.Schema({
         type: String,
         required: false,
     },
+
+    pseudo:{
+        type: String,
+        required: true,
+    },
+
     id: {
         type: String,
         required: true,

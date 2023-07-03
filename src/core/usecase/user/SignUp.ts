@@ -11,6 +11,7 @@ import {Role} from "../../domain/ValueObject/Role";
  export interface SignUpProps{
      firstName?: string;
      lastName?: string;
+     pseudo?: string;
      email: string;
      password: string;
      role: Role;
@@ -34,6 +35,7 @@ export class SignUp implements Usecase<SignUpProps, User> {
         const user = User.create({
             firstName: props.firstName,
             lastName: props.lastName,
+            pseudo: props.pseudo,
             email: props.email,
             password: hash,
             role: props.role,

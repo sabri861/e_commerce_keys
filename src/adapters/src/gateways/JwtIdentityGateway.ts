@@ -2,7 +2,9 @@ import {TokenGateway} from "../../../core/gateways/TokenGateway";
 import {Identity} from "../../../core/domain/Identity";
 import {User} from "../../../core/domain/entities/User";
 import {sign, verify} from "jsonwebtoken";
+import {injectable} from "inversify";
 
+@injectable()
 export class JwtIdentityGateway implements TokenGateway {
     constructor(private secretKey: string) {}
 

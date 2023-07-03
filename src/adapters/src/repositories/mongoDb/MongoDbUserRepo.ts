@@ -2,7 +2,9 @@ import {UserRepo} from "../../../../core/domain/repositories/UserRepo";
 import {MongoDbUserMapper, MongoDbUserMapperProps} from "../mappers/MongoDbUserMapper";
 import {User} from "../../../../core/domain/entities/User";
 import {UserModel} from "../models/UserModel";
+import {injectable} from "inversify";
 
+@injectable()
 export class MongoDbUserRepo implements UserRepo {
 
     private mongoDbUserMappper: MongoDbUserMapper = new MongoDbUserMapper();
@@ -19,6 +21,7 @@ export class MongoDbUserRepo implements UserRepo {
                     id: user.userProps.id,
                     lastName: user.userProps.lastName,
                     password: user.userProps.password,
+                    pseudo: user.userProps.pseudo,
                     role: user.userProps.role,
                 }
             },
@@ -41,6 +44,7 @@ export class MongoDbUserRepo implements UserRepo {
                     id: user.userProps.id,
                     lastName: user.userProps.lastName,
                     password: user.userProps.password,
+                    pseudo: user.userProps.pseudo,
                     role: user.userProps.role,
                 }
             },

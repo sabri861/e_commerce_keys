@@ -1,3 +1,4 @@
+import 'reflect-metadata';
 import {JwtIdentityGateway} from "../gateways/JwtIdentityGateway";
 import {User} from "../../../core/domain/entities/User";
 import {v4} from "uuid";

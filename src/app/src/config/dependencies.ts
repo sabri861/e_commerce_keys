@@ -17,6 +17,7 @@ const passwordGateway = new BcryptPasswordGateway();
 const sendGridGateway = new SendGridEmailGateway(SgApiKey);
 const jwt = new JwtIdentityGateway(process.env.SECRET_KEY);
 
+//
 export const dependencies = {
     jwt: jwt,
     sendGridGateway: sendGridGateway,

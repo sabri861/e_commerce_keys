@@ -9,6 +9,7 @@ export interface UpdateUserProps {
     id: string;
     email?: string;
     password?: string;
+    pseudo?: string;
 }
 
 export class UpdateUser implements Usecase<UpdateUserProps,User> {
@@ -25,7 +26,7 @@ export class UpdateUser implements Usecase<UpdateUserProps,User> {
         if(props.password) {
             props.password = await this.passwordGateway.encrypt(props.password)
         }
-        existingUser.update({email: props.email, password: props.password});
+        existingUser.update({email: props.email, password: props.password, pseudo: props.pseudo});
         await this.userRepo.update(existingUser);
         return existingUser;
     }

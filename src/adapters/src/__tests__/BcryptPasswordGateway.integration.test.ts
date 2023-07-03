@@ -1,3 +1,4 @@
+import 'reflect-metadata';
 import { BcryptPasswordGateway } from "../gateways/BcryptPasswordGateway";
 
 describe("BcryptPasswordGateway integration test", () => {

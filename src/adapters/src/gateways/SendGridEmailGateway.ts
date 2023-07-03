@@ -1,7 +1,9 @@
 import { SendEmailGateway } from "../../../core/gateways/SendEmailGateway";
 import { Msg } from "../../../core/domain/ValueObject/Msg";
 import sgMail from '@sendgrid/mail';
+import {injectable} from "inversify";
 
+@injectable()
 export class SendGridEmailGateway implements SendEmailGateway {
     constructor(private apiKey: string) {
         sgMail.setApiKey(apiKey);

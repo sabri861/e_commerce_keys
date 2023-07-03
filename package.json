@@ -28,6 +28,7 @@
     "bcryptjs": "^2.4.3",
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
+    "inversify": "^6.0.1",
     "jest-nock": "^0.2.2",
     "jsonwebtoken": "^9.0.0",
     "mongodb": "^5.4.0",

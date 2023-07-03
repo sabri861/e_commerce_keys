@@ -1,3 +1,4 @@
+import 'reflect-metadata';
 import { SendGridEmailGateway } from "../gateways/SendGridEmailGateway";
 import { Msg } from "../../../core/domain/ValueObject/Msg";
 import sgMail from '@sendgrid/mail';

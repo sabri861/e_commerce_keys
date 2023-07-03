@@ -1,3 +1,4 @@
+import 'reflect-metadata';
 import {Role} from "../../domain/ValueObject/Role";
 import {InMemoryUserRepo} from "../adapters/repositories/InMemoryUserRepo";
 import {DeleteUser} from "../../usecase/user/DeleteUser";
