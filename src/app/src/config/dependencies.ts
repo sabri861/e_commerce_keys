@@ -9,6 +9,7 @@ import {BcryptPasswordGateway} from "../../../adapters/src/gateways/BcryptPasswo
 import {MongoDbUserRepo} from "../../../adapters/src/repositories/mongoDb/MongoDbUserRepo";
 import {SendGridEmailGateway} from "../../../adapters/src/gateways/SendGridEmailGateway";
 import * as process from "process";
+import {Logger} from "./Logger";
 
 const SgApiKey = process.env.SG_API_KEY;
 
@@ -17,7 +18,7 @@ const passwordGateway = new BcryptPasswordGateway();
 const sendGridGateway = new SendGridEmailGateway(SgApiKey);
 const jwt = new JwtIdentityGateway(process.env.SECRET_KEY);
 
-//
+
 export const dependencies = {
     jwt: jwt,
     sendGridGateway: sendGridGateway,
@@ -27,4 +28,5 @@ export const dependencies = {
     updateUser: new UpdateUser(userRepository, passwordGateway),
     deleteUser: new DeleteUser(userRepository),
     getUserById: new GetUserById(userRepository),
+    logger : new Logger(process.env.LOG_LEVEL),
 };

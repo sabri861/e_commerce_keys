@@ -1,3 +1,4 @@
+import 'reflect-metadata';
 import {UserRepo} from "../../../../core/domain/repositories/UserRepo";
 import {MongoDbUserMapper, MongoDbUserMapperProps} from "../mappers/MongoDbUserMapper";
 import {User} from "../../../../core/domain/entities/User";
@@ -61,12 +62,8 @@ export class MongoDbUserRepo implements UserRepo {
         });
 
 
-
-        console.log("Result from DB:", result);
-
         if (result){
             const user = this.mongoDbUserMappper.toDomain(result);
-            console.log("Mapped user:", user);
             return user;
         }
     }

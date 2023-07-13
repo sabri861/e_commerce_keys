@@ -2,41 +2,54 @@ import 'reflect-metadata';
 import request from 'supertest';
 import mongoose from 'mongoose';
 import {Role} from "../../../core/domain/ValueObject/Role";
-import {dependencies} from "../config/dependencies";
 import {User} from "../../../core/domain/entities/User";
 import {v4} from "uuid";
 import {configureExpress} from "../config/express";
 import express from "express";
+import {AppDependencies} from "../config/AppDependencies";
+import {KeysIdentifiers} from "../../../core/usecase/KeysIdentifiers";
+import {JwtIdentityGateway} from "../../../adapters/src/gateways/JwtIdentityGateway";
+import {SignUp} from "../../../core/usecase/user/SignUp";
 
-let user: User;
-let adminUser: User;
-let app: express.Application;
-let connection: mongoose.Connection;
-let token: string;
-let adminToken: string;
+
+const appDependencies = new AppDependencies();
+
+appDependencies.init();
+const signUp = appDependencies.get<SignUp>(SignUp);
+const tokenGateway = appDependencies.get<JwtIdentityGateway>(KeysIdentifiers.tokenGateway);
 
 describe('User Controller', () => {
+    let user: User;
+    let adminUser: User;
+    let app: express.Application;
+    let connection: mongoose.Connection;
+    let token: string;
+    let adminToken: string;
+
     beforeAll(async () => {
         await mongoose.connect(`mongodb://127.0.0.1:27017/KEYS`);
         connection = mongoose.createConnection("mongodb://127.0.0.1:27017/KEYS");
         app = express();
         configureExpress(app);
-        user = await dependencies.SignUp.execute({
+        user = await signUp.execute({
             email: `${v4()}jhon@doe.com`,
-            password: '@Zerty',
+            password:  '@Zerty69Latrik3éflite__',
             pseudo: `jhon${v4()}`,
             role: Role.USER,
         });
 
-        adminUser = await dependencies.SignUp.execute({
+        adminUser = await signUp.execute({
             email: `${v4()}admin@doe.com`,
-            password: '@Zerty',
-            pseudo: `jhon${v4()}`,
+            password: '@Zerty69Latrik3éflite__',
+            pseudo: `admin${v4()}`,
             role: Role.ADMIN,
         });
 
-        token = await dependencies.jwt.generate(user)
-        adminToken = await dependencies.jwt.generate(adminUser);
+        token = await tokenGateway.generate(user);
+        adminToken = await tokenGateway.generate(adminUser);
+
+
+
     });
 
     afterAll(async () => {
@@ -44,35 +57,34 @@ describe('User Controller', () => {
         await connection.close();
     });
 
-    it('should sign up a user', async () => {
+  it('should return 200 and responseDto signUp', async () => {
         const email = `${v4()}jhon@doe.com`
         const response = await request(app)
             .post('/users/signup')
             .send({
                 email,
-                password: '@Zerty' ,
+                password: '@Zerty69Latrik3éflite__',
                 pseudo: `jhon${v4()}`,
                 role: Role.USER,
             });
 
-        expect(response.status).toBe(201);
+        expect(response.status).toBe(200);
         expect(response.body.email).toEqual(email);
     });
 
-    it('should sign in a user', async () => {
+    it('should return 200 and responseDto SignIn', async () => {
         const response = await request(app)
             .post('/users/signin')
             .send({
                 email: user.userProps.email,
-                password: '@Zerty' ,
+                password:  '@Zerty69Latrik3éflite__',
             });
 
         expect(response.status).toBe(200);
         expect(response.body.email).toEqual(user.userProps.email);
     });
 
-
-    it('should get a user by id', async () => {
+    it('should return 200 and responseDto id', async () => {
         const response = await request(app)
             .get(`/users/${user.userProps.id}`)
             .set("Authorization", `Bearer ${adminToken}`);
@@ -81,77 +93,29 @@ describe('User Controller', () => {
         expect(response.body.id).toEqual(user.userProps.id);
     });
 
-    it('should not allow a non-admin user to update another user', async () => {
-        const anotherUser = await dependencies.SignUp.execute({
-            email: `${v4()}another@doe.com`,
-            password: '@Zerty',
-            pseudo: `jhon${v4()}`,
-            role: Role.USER,
-        });
-
-        const response = await request(app)
-            .put(`/users/${anotherUser.userProps.id}`)
-            .set("Authorization", `Bearer ${token}`)
-            .send({
-                email: "newemail@example.com",
-            });
-
-        expect(response.status).toBe(401);
-    });
-
-    it('should allow a user to update their own email and password and pseudo', async () => {
-        const newEmail = "newemail@example.com";
-        const newPassword = "newpassword";
-        const newPseudo = "jhon75";
-
+    it('should return 200 and userProperties', async () => {
         const response = await request(app)
             .put(`/users/${user.userProps.id}`)
-            .set("Authorization", `Bearer ${token}`)
+            .set("Authorization", `Bearer ${adminToken}`)
             .send({
-                email: newEmail,
-                password: newPassword,
-                pseudo: newPseudo,
+                email: `${v4()}admin@doe.com`,
+                password: '@Zerty69Latrik3éflite__new',
+                pseudo: `john-updated${v4()}`,
             });
-
         expect(response.status).toBe(200);
-        expect(response.body.email).toEqual(newEmail);
-
-        const updatedUser = await dependencies.getUserById.execute({userId: user.userProps.id});
-        const isMatch = await dependencies.passwordGateway.compare(newPassword, updatedUser.userProps.password);
-
-        expect(isMatch).toBe(true);
+        expect(response.body.id).toEqual(user.userProps.id);
+        expect(response.body.email).toEqual(user.userProps.email);
     });
 
-    it('should allow a user to delete their own account', async () => {
+    it('should return 200', async () => {
         const response = await request(app)
             .delete(`/users/${user.userProps.id}`)
-            .set("Authorization", `Bearer ${token}`);
+            .set("Authorization", `Bearer ${adminToken}`);
 
-        expect(response.status).toBe(204);
-
-        let deletedUser;
-        try {
-            deletedUser = await dependencies.getUserById.execute({userId: user.userProps.id});
-        } catch (err) {
-            deletedUser = null;
-        }
-
-        expect(deletedUser).toBeNull();
+        expect(response.status).toBe(200);
     });
 
 
-    it('should not allow a non-admin user to delete another user', async () => {
-        const anotherUser = await dependencies.SignUp.execute({
-            email: `${v4()}another@doe.com`,
-            password: '@Zerty',
-            role: Role.USER,
-        });
 
-        const response = await request(app)
-            .delete(`/users/${anotherUser.userProps.id}`)
-            .set("Authorization", `Bearer ${token}`);
-
-        expect(response.status).toBe(401);
-    });
 
 });

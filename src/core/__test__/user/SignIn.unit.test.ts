@@ -4,6 +4,7 @@ import {SignIn} from "../../usecase/user/SignIn";
 import {InMemoryPasswordGateway} from "../adapters/gateways/InMemoryPasswordGateway";
 import {User} from "../../domain/entities/User";
 import {Role} from "../../domain/ValueObject/Role";
+import {AuthenticationError} from "../../domain/errors/AuthenticationError";
 
 
 
@@ -44,7 +45,7 @@ describe("Unit-SignIn", () => {
             password: "azerty",
         };
 
-        await expect(signIn.execute(signInProps)).rejects.toThrow("User does not exist");
+        await expect(signIn.execute(signInProps)).rejects.toThrow(new AuthenticationError.SignInFailed("SIGNIN_FAILED"));
     });
 
     it("Should not sign in a user if the password is incorrect", async () => {
@@ -62,9 +63,8 @@ describe("Unit-SignIn", () => {
             password: "wrongPassword",
         };
 
-        await expect(signIn.execute(signInProps)).rejects.toThrow("Invalid password");
+        await expect(signIn.execute(signInProps)).rejects.toThrow(new AuthenticationError.SignInFailed("SIGNIN_FAILED"));
     });
-
     it("Should check if a user is saved correctly", async () => {
         const user = await User.create({
             firstName: "jhon",

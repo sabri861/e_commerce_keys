@@ -2,15 +2,18 @@ import {Usecase} from "../Usecase";
 import {User} from "../../domain/entities/User";
 import {UserRepo} from "../../domain/repositories/UserRepo";
 import {Identity} from "../../domain/Identity";
+import {inject, injectable} from "inversify";
+import {KeysIdentifiers} from "../KeysIdentifiers";
 
 
 export interface  GetUserByIdCommand {
     userId: string;
 }
 
+@injectable()
 export class GetUserById implements Usecase<GetUserByIdCommand, User>{
     constructor(
-        private userRepo: UserRepo,
+        @inject(KeysIdentifiers.userRepo) private userRepo: UserRepo,
     ) {}
 
     async execute(command: GetUserByIdCommand): Promise<User>{

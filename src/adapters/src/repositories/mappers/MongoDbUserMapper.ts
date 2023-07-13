@@ -1,3 +1,4 @@
+import 'reflect-metadata';
 import {Role} from "../../../../core/domain/ValueObject/Role";
 import {Mapper} from "../../../../core/domain/Mapper";
 import {User} from "../../../../core/domain/entities/User";

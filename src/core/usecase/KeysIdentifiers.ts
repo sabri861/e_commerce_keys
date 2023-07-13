@@ -3,4 +3,5 @@ export class KeysIdentifiers {
     static readonly passwordGateway = Symbol.for('passwordGateway')
     static readonly sendEmailGateway = Symbol.for('sendEmailGateway')
     static readonly tokenGateway = Symbol.for('tokenGateway')
+    static readonly logger = Symbol.for('logger');
 }

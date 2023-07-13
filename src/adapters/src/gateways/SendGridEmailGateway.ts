@@ -1,3 +1,4 @@
+import 'reflect-metadata';
 import { SendEmailGateway } from "../../../core/gateways/SendEmailGateway";
 import { Msg } from "../../../core/domain/ValueObject/Msg";
 import sgMail from '@sendgrid/mail';
@@ -23,10 +24,8 @@ export class SendGridEmailGateway implements SendEmailGateway {
         try {
             await sgMail.send(mail);
         } catch (error) {
-            console.error(error);
 
             if (error.response) {
-                console.error(error.response.body)
             }
         }
     }

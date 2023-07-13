@@ -1,3 +1,4 @@
+import 'reflect-metadata';
 import {TokenGateway} from "../../../core/gateways/TokenGateway";
 import {Identity} from "../../../core/domain/Identity";
 import {User} from "../../../core/domain/entities/User";

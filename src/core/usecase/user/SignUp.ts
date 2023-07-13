@@ -1,3 +1,4 @@
+import 'reflect-metadata';
 import {Usecase} from "../Usecase";
 import {User} from "../../domain/entities/User";
 import {UserRepo} from "../../domain/repositories/UserRepo";
@@ -6,6 +7,8 @@ import {SendEmailGateway} from "../../gateways/SendEmailGateway";
 import {Msg} from "../../domain/ValueObject/Msg";
 import {TokenGateway} from "../../gateways/TokenGateway";
 import {Role} from "../../domain/ValueObject/Role";
+import {inject, injectable} from "inversify";
+import {KeysIdentifiers} from "../KeysIdentifiers";
 
 
  export interface SignUpProps{
@@ -17,12 +20,13 @@ import {Role} from "../../domain/ValueObject/Role";
      role: Role;
 }
 
+@injectable()
 export class SignUp implements Usecase<SignUpProps, User> {
     constructor(
-        private userRepo: UserRepo,
-        private passwordGateway: PasswordGateway,
-        private sendEmailGateway: SendEmailGateway,
-        private tokenGateway: TokenGateway
+        @inject(KeysIdentifiers.userRepo) private userRepo: UserRepo,
+        @inject(KeysIdentifiers.passwordGateway) private passwordGateway: PasswordGateway,
+        @inject(KeysIdentifiers.sendEmailGateway) private sendEmailGateway: SendEmailGateway,
+        @inject(KeysIdentifiers.tokenGateway) private tokenGateway: TokenGateway
 
     ) {}
     async execute(props: SignUpProps): Promise<User>{

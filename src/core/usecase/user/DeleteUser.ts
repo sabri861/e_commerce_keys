@@ -1,9 +1,14 @@
 import {Usecase} from "../Usecase";
 import {UserRepo} from "../../domain/repositories/UserRepo";
 import {Identity} from "../../domain/Identity";
+import {inject, injectable} from "inversify";
+import {KeysIdentifiers} from "../KeysIdentifiers";
 
+@injectable()
 export class DeleteUser implements Usecase<string, void> {
-    constructor(private userRepo: UserRepo) {}
+    constructor(
+        @inject(KeysIdentifiers.userRepo) private userRepo: UserRepo,
+    ) {}
 
     async execute(id: string): Promise<void> {
         await this.userRepo.delete(id);

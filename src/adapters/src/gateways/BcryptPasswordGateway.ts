@@ -1,3 +1,4 @@
+import 'reflect-metadata';
 import {PasswordGateway} from "../../../core/gateways/PasswordGateway";
 import {genSaltSync, hashSync, compare} from "bcrypt";
 import {injectable} from "inversify";

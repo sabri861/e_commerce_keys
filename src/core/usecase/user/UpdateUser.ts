@@ -3,7 +3,9 @@ import {Usecase} from "../Usecase";
 import {UserRepo} from "../../domain/repositories/UserRepo";
 import {PasswordGateway} from "../../gateways/PasswordGateway";
 import {Role} from "../../domain/ValueObject/Role";
-import {Identity} from "../../domain/Identity"; // add this line
+import {Identity} from "../../domain/Identity";
+import {inject, injectable} from "inversify";
+import {KeysIdentifiers} from "../KeysIdentifiers"; // add this line
 
 export interface UpdateUserProps {
     id: string;
@@ -12,10 +14,11 @@ export interface UpdateUserProps {
     pseudo?: string;
 }
 
+@injectable()
 export class UpdateUser implements Usecase<UpdateUserProps,User> {
     constructor(
-        private userRepo: UserRepo,
-        private passwordGateway: PasswordGateway,
+        @inject(KeysIdentifiers.userRepo) private userRepo: UserRepo,
+        @inject(KeysIdentifiers.passwordGateway) private passwordGateway: PasswordGateway,
     ) {}
 
     async execute(props: UpdateUserProps): Promise<User> {
